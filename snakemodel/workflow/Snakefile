@@ -1,0 +1,31 @@
+"""Prepdwi_recon
+
+"""
+configfile: 'config/snakebids.yml'
+
+
+include: 'rules/setup.smk'
+include: 'rules/common.smk'
+
+
+
+if config["model"] == "tbss":
+    include: 'rules/tbss.smk'
+    target = expand(
+        rules.tbss_fill.output,
+        contrast_label=_get_contrast_labels(_get_design_matrix()),
+        parameter=settings["parameter"],
+    )
+
+
+if config["model"] == "nbs":
+    include: 'rules/nbs.smk'
+    target = lambda wcards: (
+        expand(
+            rules.post_nbs.output,
+            contrast_label=_get_contrast_labels(_get_design_matrix()),
+        )
+    )
+
+rule group:
+    input: target

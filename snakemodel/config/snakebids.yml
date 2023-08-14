@@ -1,0 +1,132 @@
+pip-flags: --no-index -f ~/projects/ctb-akhanf/knavynde/wheels/
+
+pybids_inputs:
+  data:
+    wildcards:
+      - subject
+      - session
+  fa:
+    filters:
+      extension: .nii.gz
+      suffix: mdp
+      desc: FA
+    wildcards:
+      - subject
+      - session
+  param_map:
+    filters:
+      extension: .nii.gz
+      suffix: mdp
+    wildcards:
+      - subject
+      - session
+  connectome:
+    filters:
+      scope: snaketract
+      datatype: dwi
+      suffix: connectome
+      extension: .csv
+    wildcards:
+      - subject
+      - session
+
+targets_by_analysis_level:
+  group:
+  - 'group'
+analysis_levels: &id001
+- group
+parse_args:
+  bids_dir:
+    help: The directory with the input dataset formatted according to the BIDS standard.
+    nargs: '?'
+    default: ../hcp1200
+  output_dir:
+    help: The directory where the output files should be stored. If you are running
+      group level analysis this folder should be prepopulated with the results of
+      the participant level analysis.
+    nargs: '?'
+    default: ../hcp1200/derivatives
+  analysis_level:
+    help: Level of the analysis that will be performed.
+    choices: *id001
+    nargs: '?'
+    default: participant
+  --participant_label:
+    help: The label(s) of the participant(s) that should be analyzed. The label corresponds
+      to sub-<participant_label> from the BIDS spec (so it does not include "sub-").
+      If this parameter is not provided all subjects should be analyzed. Multiple
+      participants can be specified with a space separated list.
+    nargs: +
+  --exclude_participant_label:
+    help: The label(s) of the participant(s) that should be excluded. The label corresponds
+      to sub-<participant_label> from the BIDS spec (so it does not include "sub-").
+      If this parameter is not provided all subjects should be analyzed. Multiple
+      participants can be specified with a space separated list.
+    nargs: +
+  --derivatives:
+    default: false
+    action: store_true
+
+  --component:
+    help: >
+      The component preset to use for finding relevant data. The filters and
+      wildcards of the component can be modified using `--filter-<component>` or
+      `--wildcards-<component>`
+    default: fa
+  --model:
+    help: >
+      Regression model to run
+    choices:
+    - tbss
+    - nbs
+  --model-settings:
+    help: >
+      Specify additional settings for the model using key=val syntax
+    nargs: "*"
+  --outdir:
+    help: >
+      Output directory name. Defaults to "stats/"
+    default: stats
+  --comp-label:
+    help: >
+      Label to use as suffix in files derived from the component
+  --desc:
+    help: >
+      Description tag to use in entity
+  --design:
+    help: Specification of the design matrix, following patsy syntax
+  --ttest:
+    help: >
+      Specify one or more ttests, using the string syntax supported by patsy.
+      Can be used multiple times to specify multiple tests, or multiple tests
+      can be specifed in a single specification by seperating the tests with a
+      comma.
+    action: append
+    nargs: +
+  --print-design:
+    help: Print out design matrix and contrast to be used
+    action: store_true
+    default: false
+  --filter-participants:
+    help: >
+      Filter participants based on a column. First item given should be the
+      column name, subsequent items are allowable values.
+    nargs: +
+    action: append
+  --transform:
+    help: >
+      Specify an imputation strategy for a column in participants.tsv. The first
+      argument must be the name of the column, the second must be the name of
+      the strategy, and further arguments are specific to the strategy chosen.
+
+      Supports the four imputation strategies in sklearn's SimpleImputer: mean,
+      median, most_frequent, and constant. If constant is chosen, an additional
+      argument specifying the value to be used may be specified.
+    action: append
+    nargs: +
+  --skip-nan:
+    help: >
+      Filter out any participants with nans in the participants.tsv columns used
+      in the model
+    action: store_true
+    default: false
