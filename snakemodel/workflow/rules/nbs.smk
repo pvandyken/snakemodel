@@ -34,7 +34,7 @@ rule run_nbs:
         mat=rules.make_patsy_dm.output["mat"],
         con=rules.split_contrast_matrix.output[0],
     output:
-        matrix=temp(Path(config['output_dir'], outdir, "nbs_{contrast_label}.mat"))
+        matrix=tempout("run_nbs", None, ".mat", "contrast_label")
     log: log(f"run_nbs/{outdir}/{config.get('desc', '')}", None, "contrast_label")
     benchmark: benchmark(f"run_nbs/{outdir}/{config.get('desc', '')}", None, "contrast_label")
     container: "docker://pvandyken/nbs:1.2"

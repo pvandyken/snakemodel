@@ -17,7 +17,7 @@ def pick_component(app: SnakeBidsApp):
         raise ConfigError(f"--component must be set to one of\n    {choices}")
 
     param_map = app.config["pybids_inputs"]["param_map"]
-    app.config["pybids_inputs"] = {
+    app.config["pybids_inputs_run"] = {
         selected: app.config["pybids_inputs"][selected]
     }
     # if "filter_param_map" in app.args.args_dict:

@@ -184,6 +184,7 @@ rule make_patsy_dm:
         con=tempout("make_patsy_design_matrix", None, ".con.txt"),
     run:
         dm = _get_design_matrix()
+        print(f"saving to {output.mat}")
         np.savetxt(output.mat, dm, fmt="%i")
         np.savetxt(output.con, _get_contrast_matrix(dm), fmt="%i")
 
